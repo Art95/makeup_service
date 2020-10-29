@@ -47,11 +47,7 @@ def vis_parsing_maps(im, parsing_anno, stride, save_im=False, save_path='vis_res
     # return vis_im
 
 
-def evaluate(image_path='./imgs/116.jpg', cp='cp/79999_iter.pth'):
-
-    # if not os.path.exists(respth):
-    #     os.makedirs(respth)
-
+def evaluate(img, cp):
     n_classes = 19
     net = BiSeNet(n_classes=n_classes)
     net.cuda()
@@ -64,17 +60,13 @@ def evaluate(image_path='./imgs/116.jpg', cp='cp/79999_iter.pth'):
     ])
 
     with torch.no_grad():
-        img = Image.open(image_path)
         image = img.resize((512, 512), Image.BILINEAR)
         img = to_tensor(image)
         img = torch.unsqueeze(img, 0)
         img = img.cuda()
         out = net(img)[0]
         parsing = out.squeeze(0).cpu().numpy().argmax(0)
-        # print(parsing)
-        # print(np.unique(parsing))
 
-        # vis_parsing_maps(image, parsing, stride=1, save_im=False, save_path=osp.join(respth, dspth))
         return parsing
 
 if __name__ == "__main__":
