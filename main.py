@@ -3,6 +3,14 @@ from PIL import Image
 import numpy as np
 from skimage.filters import gaussian
 from test import evaluate
+import argparse
+
+
+def parse_args():
+    parse = argparse.ArgumentParser()
+    parse.add_argument('--video-source', default=0)
+    parse.add_argument('--flip-image', default=True)
+    return parse.parse_args()
 
 
 def sharpen(img):
@@ -55,8 +63,12 @@ def main():
     # 13 lower lip
     # 17 hair
 
-    video_capture_device_index = 0
-    webcam = cv2.VideoCapture(video_capture_device_index)
+    args = parse_args()
+
+    video_source = args.video_source
+    flip = args.flip_image
+
+    webcam = cv2.VideoCapture(video_source)
 
     table = {
         'hair': 17,
@@ -72,7 +84,12 @@ def main():
 
     while True:
         ret, image = webcam.read()
-        image = cv2.flip(image, 1)
+
+        if not ret:
+            break
+
+        if flip:
+            image = cv2.flip(image, 1)
 
         width = image.shape[1]
         height = image.shape[0]
@@ -88,11 +105,11 @@ def main():
             image = hair(image, parsing, part, color)
 
         cv2.imshow('my webcam', image)
-        # cv2.imshow('color', cv2.resize(image, (512, 512)))
 
         if cv2.waitKey(1) == 27:
             break  # esc to quit
 
+    webcam.release()
     cv2.destroyAllWindows()
 
 
