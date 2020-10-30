@@ -1,6 +1,13 @@
 import cv2
 import numpy as np
 from skimage.filters import gaussian
+import enum
+
+
+class HeadPart(enum.Enum):
+    hair = 17
+    upper_lip = 12
+    lower_lip = 13
 
 
 def sharpen(img):
@@ -22,7 +29,7 @@ def sharpen(img):
     return np.array(img_out, dtype=np.uint8)
 
 
-def change_segment_color(image, parsing, part, color):
+def change_segment_color(image, segmentation, head_part, color):
     b, g, r = color
     tar_color = np.zeros_like(image)
     tar_color[:, :, 0] = b
@@ -32,15 +39,15 @@ def change_segment_color(image, parsing, part, color):
     image_hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
     tar_hsv = cv2.cvtColor(tar_color, cv2.COLOR_BGR2HSV)
 
-    if part == 12 or part == 13:
+    if head_part is HeadPart.upper_lip or head_part is HeadPart.lower_lip:
         image_hsv[:, :, 0:2] = tar_hsv[:, :, 0:2]
     else:
         image_hsv[:, :, 0:1] = tar_hsv[:, :, 0:1]
 
     changed = cv2.cvtColor(image_hsv, cv2.COLOR_HSV2BGR)
 
-    if part == 17:
+    if head_part is HeadPart.hair:
         changed = sharpen(changed)
 
-    changed[parsing != part] = image[parsing != part]
+    changed[segmentation != head_part.value] = image[segmentation != head_part.value]
     return changed
