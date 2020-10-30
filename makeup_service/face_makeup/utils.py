@@ -22,7 +22,7 @@ def sharpen(img):
     return np.array(img_out, dtype=np.uint8)
 
 
-def hair(image, parsing, part, color):
+def change_segment_color(image, parsing, part, color):
     b, g, r = color
     tar_color = np.zeros_like(image)
     tar_color[:, :, 0] = b

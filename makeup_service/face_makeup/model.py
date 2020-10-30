@@ -1,13 +1,8 @@
-#!/usr/bin/python
-# -*- encoding: utf-8 -*-
-
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
 from makeup_service.face_makeup.resnet import Resnet18
-# from modules.bn import InPlaceABNSync as BatchNorm2d
 
 
 class ConvBNReLU(nn.Module):
@@ -32,6 +27,7 @@ class ConvBNReLU(nn.Module):
             if isinstance(ly, nn.Conv2d):
                 nn.init.kaiming_normal_(ly.weight, a=1)
                 if not ly.bias is None: nn.init.constant_(ly.bias, 0)
+
 
 class BiSeNetOutput(nn.Module):
     def __init__(self, in_chan, mid_chan, n_classes, *args, **kwargs):
@@ -141,41 +137,6 @@ class ContextPath(nn.Module):
         return wd_params, nowd_params
 
 
-### This is not used, since I replace this with the resnet feature with the same size
-class SpatialPath(nn.Module):
-    def __init__(self, *args, **kwargs):
-        super(SpatialPath, self).__init__()
-        self.conv1 = ConvBNReLU(3, 64, ks=7, stride=2, padding=3)
-        self.conv2 = ConvBNReLU(64, 64, ks=3, stride=2, padding=1)
-        self.conv3 = ConvBNReLU(64, 64, ks=3, stride=2, padding=1)
-        self.conv_out = ConvBNReLU(64, 128, ks=1, stride=1, padding=0)
-        self.init_weight()
-
-    def forward(self, x):
-        feat = self.conv1(x)
-        feat = self.conv2(feat)
-        feat = self.conv3(feat)
-        feat = self.conv_out(feat)
-        return feat
-
-    def init_weight(self):
-        for ly in self.children():
-            if isinstance(ly, nn.Conv2d):
-                nn.init.kaiming_normal_(ly.weight, a=1)
-                if not ly.bias is None: nn.init.constant_(ly.bias, 0)
-
-    def get_params(self):
-        wd_params, nowd_params = [], []
-        for name, module in self.named_modules():
-            if isinstance(module, nn.Linear) or isinstance(module, nn.Conv2d):
-                wd_params.append(module.weight)
-                if not module.bias is None:
-                    nowd_params.append(module.bias)
-            elif isinstance(module, nn.BatchNorm2d):
-                nowd_params += list(module.parameters())
-        return wd_params, nowd_params
-
-
 class FeatureFusionModule(nn.Module):
     def __init__(self, in_chan, out_chan, *args, **kwargs):
         super(FeatureFusionModule, self).__init__()
@@ -230,7 +191,6 @@ class BiSeNet(nn.Module):
     def __init__(self, n_classes, *args, **kwargs):
         super(BiSeNet, self).__init__()
         self.cp = ContextPath()
-        ## here self.sp is deleted
         self.ffm = FeatureFusionModule(256, 256)
         self.conv_out = BiSeNetOutput(256, 256, n_classes)
         self.conv_out16 = BiSeNetOutput(128, 64, n_classes)
@@ -269,14 +229,3 @@ class BiSeNet(nn.Module):
                 wd_params += child_wd_params
                 nowd_params += child_nowd_params
         return wd_params, nowd_params, lr_mul_wd_params, lr_mul_nowd_params
-
-
-if __name__ == "__main__":
-    net = BiSeNet(19)
-    net.cuda()
-    net.eval()
-    in_ten = torch.randn(16, 3, 640, 480).cuda()
-    out, out16, out32 = net(in_ten)
-    print(out.shape)
-
-    net.get_params()
