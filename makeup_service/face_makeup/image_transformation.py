@@ -67,7 +67,7 @@ def change_segment_color(image, segmentation, head_part, color):
 
     if HeadPart.hair == head_part:
         sharpened_image = sharpen(image)
-        sharpened_image[segmentation != HeadPart.hair] = image[segmentation != HeadPart.hair]
+        sharpened_image[segmentation != HeadPart.hair.value] = image[segmentation != HeadPart.hair.value]
 
         return sharpened_image
 

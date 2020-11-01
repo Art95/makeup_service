@@ -20,14 +20,13 @@ def test_get_segmentation():
     img = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     img_pil = Image.fromarray(img)
 
-    semantic_segmentation = SemanticSegmentation(model_path)
-    actual_segmentation = semantic_segmentation.get_segmentation(img_pil)
+    segmentation_model = SemanticSegmentation(model_path)
+    actual_segmentation = segmentation_model.get_segmentation(img_pil)
     actual_segmentation = cv2.resize(actual_segmentation, dim, interpolation=cv2.INTER_NEAREST)
 
     expected_segmentation = np.load(expected_segmentation_path)
 
-    equal_values = expected_segmentation == actual_segmentation
-    assert equal_values.all()
+    assert np.allclose(expected_segmentation, actual_segmentation)
 
 
 
