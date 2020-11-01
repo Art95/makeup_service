@@ -2,7 +2,7 @@ import cv2
 from pathlib import Path
 from PIL import Image
 from makeup_service.face_makeup.semantic_segmentation import SemanticSegmentation
-from makeup_service.face_makeup.utils import change_segment_color, HeadPart
+from makeup_service.face_makeup.utils import *
 import os
 
 
@@ -24,10 +24,14 @@ def apply_makeup_on_image(image, segmentation_model, head_parts, colors):
     segmentation = segmentation_model.get_segmentation(img_pil)
     segmentation = cv2.resize(segmentation, dim, interpolation=cv2.INTER_NEAREST)
 
-    for head_part, color in zip(head_parts, colors):
-        image = change_segment_color(image, segmentation, head_part, color)
+    #for head_part, color in zip(head_parts, colors):
+    #    image = change_segment_color(image, segmentation, head_part, color)
 
-    return image
+    new_image = change_hair_color(image, segmentation, colors[0])
+    new_image = change_lip_color(new_image, segmentation, HeadPart.upper_lip, colors[1])
+    new_image = change_lip_color(new_image, segmentation, HeadPart.lower_lip, colors[2])
+
+    return new_image
 
 
 def apply_makeup_on_video(video_source, colors, flip=True):
