@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="makeup-service",
+    name="makeup_service",
     version="0.0.1",
     author="Artem Baraniuk",
     author_email="artem.baranyuk@gmail.com",

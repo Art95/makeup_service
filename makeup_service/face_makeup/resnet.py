@@ -1,12 +1,6 @@
-#!/usr/bin/python
-# -*- encoding: utf-8 -*-
-
-import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.utils.model_zoo as modelzoo
-
-# from modules.bn import InPlaceABNSync as BatchNorm2d
 
 resnet18_url = 'https://download.pytorch.org/models/resnet18-5c106cde.pth'
 
@@ -98,12 +92,3 @@ class Resnet18(nn.Module):
                 nowd_params += list(module.parameters())
         return wd_params, nowd_params
 
-
-if __name__ == "__main__":
-    net = Resnet18()
-    x = torch.randn(16, 3, 224, 224)
-    out = net(x)
-    print(out[0].size())
-    print(out[1].size())
-    print(out[2].size())
-    net.get_params()

@@ -1,33 +1,41 @@
-import cv2
+from pathlib import Path
 from PIL import Image
-from makeup_service.face_makeup.test import evaluate
-from makeup_service.face_makeup.utils import hair
+from makeup_service.face_makeup.semantic_segmentation import SemanticSegmentation
+from makeup_service.face_makeup.image_transformation import *
 import os
 
 
-def get_project_root():
-    from pathlib import Path
-    return Path(__file__).parent.parent
+def get_data_folder():
+    root_folder = Path(__file__).parent.parent
+    data_folder = os.path.join(root_folder, 'data')
+
+    return data_folder
 
 
-# 1  face
-# 11 teeth
-# 12 upper lip
-# 13 lower lip
-# 17 hair
+def apply_makeup_on_image(image, segmentation_model, head_parts, colors):
+    width = image.shape[1]
+    height = image.shape[0]
+    dim = (width, height)
 
-def apply_makeup(video_source, colors, flip=True):
+    img = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    img_pil = Image.fromarray(img)
+
+    segmentation = segmentation_model.get_segmentation(img_pil)
+    segmentation = cv2.resize(segmentation, dim, interpolation=cv2.INTER_NEAREST)
+
+    for head_part, color in zip(head_parts, colors):
+        image = change_segment_color(image, segmentation, head_part, color)
+
+    return image
+
+
+def apply_makeup_on_video(video_source, colors, flip=True):
     video_stream = cv2.VideoCapture(video_source)
 
-    table = {
-        'hair': 17,
-        'upper_lip': 12,
-        'lower_lip': 13
-    }
+    model_path = os.path.join(get_data_folder(), 'bisenet_model.pth')
+    segmentation_model = SemanticSegmentation(model_path)
 
-    cp = os.path.join(get_project_root(), 'data/bisenet_model.pth')
-
-    parts = [table['hair'], table['upper_lip'], table['lower_lip']]
+    head_parts = [HeadPart.hair, HeadPart.upper_lip, HeadPart.lower_lip]
 
     while True:
         ret, image = video_stream.read()
@@ -38,20 +46,9 @@ def apply_makeup(video_source, colors, flip=True):
         if flip:
             image = cv2.flip(image, 1)
 
-        width = image.shape[1]
-        height = image.shape[0]
-        dim = (width, height)
+        processed_image = apply_makeup_on_image(image, segmentation_model, head_parts, colors)
 
-        img = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        img_pil = Image.fromarray(img)
-
-        parsing = evaluate(img_pil, cp)
-        parsing = cv2.resize(parsing, dim, interpolation=cv2.INTER_NEAREST)
-
-        for part, color in zip(parts, colors):
-            image = hair(image, parsing, part, color)
-
-        cv2.imshow('my webcam', image)
+        cv2.imshow('my webcam', processed_image)
 
         if cv2.waitKey(1) == 27:
             break  # esc to quit
