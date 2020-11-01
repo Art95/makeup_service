@@ -1,6 +1,6 @@
-from pathlib import Path
 import os
-from makeup_service.face_makeup.utils import *
+from makeup_service.face_makeup.image_transformation import *
+from tests.helpers.utils import get_test_files_folder_path
 
 
 def test_head_part_values():
@@ -55,13 +55,6 @@ def test_change_segment_color():
 
     equal_values = expected_image == actual_image
     assert equal_values.all()
-
-
-def get_test_files_folder_path():
-    tests_root_folder = Path(__file__).parent.parent
-    test_files_folder = os.path.join(tests_root_folder, 'files')
-
-    return test_files_folder
 
 
 def original_color_change_functionality(image, parsing, part, color):

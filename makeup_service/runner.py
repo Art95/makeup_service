@@ -1,7 +1,7 @@
 from pathlib import Path
 from PIL import Image
 from makeup_service.face_makeup.semantic_segmentation import SemanticSegmentation
-from makeup_service.face_makeup.utils import *
+from makeup_service.face_makeup.image_transformation import *
 import os
 
 
