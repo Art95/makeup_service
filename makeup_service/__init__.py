@@ -1,1 +1,1 @@
-from .runner import apply_makeup_on_video
+from .runner import run_on_video

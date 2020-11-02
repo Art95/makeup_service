@@ -92,7 +92,7 @@ def get_head_parts_and_colors():
     return head_parts, colors
 
 
-def save_data_source_to_file(allowed_extensions):
+def get_source_from_request(allowed_extensions):
     data_key = 'source'
 
     if data_key not in request.files:
@@ -109,31 +109,25 @@ def save_data_source_to_file(allowed_extensions):
         flash('Invalid file')
         raise RuntimeError("Invalid file")
 
+    return source
+
+
+def get_video_from_request(allowed_extensions):
     ensure_uploads_folder_exists()
+
+    source = get_source_from_request(allowed_extensions)
 
     file_name = secure_filename(source.filename)
     full_file_path = os.path.join(app.config['UPLOAD_FOLDER'], file_name)
     source.save(full_file_path)
 
-    return file_name
+    video_stream = cv2.VideoCapture(full_file_path)
+
+    return video_stream, file_name
 
 
 def get_image_from_request(allowed_extensions):
-    data_key = 'source'
-
-    if data_key not in request.files:
-        flash('No file part')
-        raise RuntimeError("No file was provided")
-
-    source = request.files[data_key]
-
-    if source.filename == '':
-        flash('No selected file')
-        raise RuntimeError("File was not selected")
-
-    if not source or not is_allowed_file(source.filename, allowed_extensions):
-        flash('Invalid file')
-        raise RuntimeError("Invalid file")
+    source = get_source_from_request(allowed_extensions)
 
     nparr = np.frombuffer(source.read(), np.uint8)
     img_np = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
@@ -159,11 +153,10 @@ def transform_video():
     allowed_extensions = {'avi'}
     head_parts, colors = get_head_parts_and_colors()
 
-    file_name = save_data_source_to_file(allowed_extensions)
-    full_video_path = os.path.join(app.config['UPLOAD_FOLDER'], file_name)
+    video_stream, file_name = get_video_from_request(allowed_extensions)
     transformed_file_path = os.path.join(app.config['UPLOAD_FOLDER'], 'transformed_' + file_name)
 
-    apply_makeup_on_video(full_video_path, colors, save_to_file=True, out_file_path=transformed_file_path)
+    apply_makeup_on_video(video_stream, colors, save_to_file=True, out_file_path=transformed_file_path)
 
     extension = get_file_extension(file_name)
 

@@ -29,8 +29,7 @@ def apply_makeup_on_image(image, segmentation_model, head_parts, colors):
     return image
 
 
-def apply_makeup_on_video(video_source, colors, save_to_file=False, out_file_path='transformed.avi', flip=True):
-    video_stream = cv2.VideoCapture(video_source)
+def apply_makeup_on_video(video_stream, colors, save_to_file=False, out_file_path='transformed.avi', flip=True):
     out_stream = None
 
     model_path = os.path.join(get_data_folder(), 'bisenet_model.pth')
@@ -71,3 +70,8 @@ def apply_makeup_on_video(video_source, colors, save_to_file=False, out_file_pat
         out_stream.release()
 
     cv2.destroyAllWindows()
+
+
+def run_on_video(video_source, colors, save_to_file=False, out_file_path='transformed.avi', flip=True):
+    video_stream = cv2.VideoCapture(video_source)
+    apply_makeup_on_video(video_stream, colors, save_to_file, out_file_path, flip)
