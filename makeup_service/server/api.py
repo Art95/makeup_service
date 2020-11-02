@@ -1,6 +1,8 @@
 import os
 import flask
 import cv2
+import io
+import numpy as np
 from pathlib import Path
 from flask import flash, request, send_file
 from werkzeug.utils import secure_filename
@@ -65,7 +67,7 @@ def get_file_extension(file_name):
     return extension
 
 
-def allowed_file(file_name, allowed_extensions):
+def is_allowed_file(file_name, allowed_extensions):
     extension = get_file_extension(file_name)
     return extension in allowed_extensions
 
@@ -103,7 +105,7 @@ def save_data_source_to_file(allowed_extensions):
         flash('No selected file')
         raise RuntimeError("File was not selected")
 
-    if not source or not allowed_file(source.filename, allowed_extensions):
+    if not source or not is_allowed_file(source.filename, allowed_extensions):
         flash('Invalid file')
         raise RuntimeError("Invalid file")
 
@@ -116,23 +118,41 @@ def save_data_source_to_file(allowed_extensions):
     return file_name
 
 
+def get_image_from_request(allowed_extensions):
+    data_key = 'source'
+
+    if data_key not in request.files:
+        flash('No file part')
+        raise RuntimeError("No file was provided")
+
+    source = request.files[data_key]
+
+    if source.filename == '':
+        flash('No selected file')
+        raise RuntimeError("File was not selected")
+
+    if not source or not is_allowed_file(source.filename, allowed_extensions):
+        flash('Invalid file')
+        raise RuntimeError("Invalid file")
+
+    nparr = np.frombuffer(source.read(), np.uint8)
+    img_np = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+
+    return img_np, source.filename
+
+
 def transform_image():
     allowed_extensions = {'png', 'jpg', 'jpeg'}
     head_parts, colors = get_head_parts_and_colors()
 
-    file_name = save_data_source_to_file(allowed_extensions)
-    full_image_path = os.path.join(app.config['UPLOAD_FOLDER'], file_name)
-
-    image_orig = cv2.imread(full_image_path)
-    transformed_image = apply_makeup_on_image(image_orig, segmentation_model, head_parts, colors)
-
-    transformed_file_path = os.path.join(app.config['UPLOAD_FOLDER'], 'transformed_' + file_name)
-
-    cv2.imwrite(transformed_file_path, transformed_image)
+    image, file_name = get_image_from_request(allowed_extensions)
+    transformed_image = apply_makeup_on_image(image, segmentation_model, head_parts, colors)
 
     extension = get_file_extension(file_name)
 
-    return send_file(transformed_file_path, mimetype='image/' + extension)
+    retval, buffer = cv2.imencode("." + extension, transformed_image)
+
+    return send_file(io.BytesIO(buffer), mimetype='image/' + extension)
 
 
 def transform_video():
