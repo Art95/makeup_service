@@ -1,40 +1,23 @@
 import os
-import flask
 import cv2
 import io
 import numpy as np
-from pathlib import Path
 from flask import flash, request, send_file
 from werkzeug.utils import secure_filename
 from makeup_service.runner import apply_makeup_on_image, apply_makeup_on_video, get_data_folder
 from makeup_service.face_makeup.semantic_segmentation import SemanticSegmentation
 from makeup_service.face_makeup.image_transformation import HeadPart
+from makeup_service.server.common import get_uploads_folder_path
 
-
-def get_uploads_folder_path():
-    root_folder = Path(__file__).parent
-    uploads_folder = os.path.join(root_folder, 'uploads')
-
-    return uploads_folder
-
-
-app = flask.Flask(__name__)
-app.secret_key = os.urandom(24)
-
-UPLOAD_FOLDER = get_uploads_folder_path()
-
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 model_path = os.path.join(get_data_folder(), 'bisenet_model.pth')
 segmentation_model = SemanticSegmentation(model_path)
 
 
-@app.route('/', methods=['GET'])
 def home():
     return "<h1>Makeup Service</h1><p>This site is a prototype API for makeup service application.</p>"
 
 
-@app.route('/image', methods=['GET', 'POST'])
 def process_image():
     if request.method == 'GET':
         return "<h1>Makeup Service</h1><p>This section is responsible for image processing.</p>"
@@ -46,7 +29,6 @@ def process_image():
             return str(err)
 
 
-@app.route('/video', methods=['GET', 'POST'])
 def process_video():
     if request.method == 'GET':
         return "<h1>Makeup Service</h1><p>This section is responsible for video processing.</p>"
@@ -118,7 +100,7 @@ def get_video_from_request(allowed_extensions):
     source = get_source_from_request(allowed_extensions)
 
     file_name = secure_filename(source.filename)
-    full_file_path = os.path.join(app.config['UPLOAD_FOLDER'], file_name)
+    full_file_path = os.path.join(get_uploads_folder_path(), file_name)
     source.save(full_file_path)
 
     video_stream = cv2.VideoCapture(full_file_path)
@@ -129,8 +111,8 @@ def get_video_from_request(allowed_extensions):
 def get_image_from_request(allowed_extensions):
     source = get_source_from_request(allowed_extensions)
 
-    nparr = np.frombuffer(source.read(), np.uint8)
-    img_np = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    np_arr = np.frombuffer(source.read(), np.uint8)
+    img_np = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
 
     return img_np, source.filename
 
@@ -154,7 +136,7 @@ def transform_video():
     head_parts, colors = get_head_parts_and_colors()
 
     video_stream, file_name = get_video_from_request(allowed_extensions)
-    transformed_file_path = os.path.join(app.config['UPLOAD_FOLDER'], 'transformed_' + file_name)
+    transformed_file_path = os.path.join(get_uploads_folder_path(), 'transformed_' + file_name)
 
     apply_makeup_on_video(video_stream, colors, save_to_file=True, out_file_path=transformed_file_path)
 
@@ -162,5 +144,3 @@ def transform_video():
 
     return send_file(transformed_file_path, mimetype='video/' + extension)
 
-
-app.run(debug=True)
