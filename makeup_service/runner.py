@@ -29,13 +29,22 @@ def apply_makeup_on_image(image, segmentation_model, head_parts, colors):
     return image
 
 
-def apply_makeup_on_video(video_source, colors, flip=True):
+def apply_makeup_on_video(video_source, colors, save_to_file=False, out_file_path='transformed.avi', flip=True):
     video_stream = cv2.VideoCapture(video_source)
+    out_stream = None
 
     model_path = os.path.join(get_data_folder(), 'bisenet_model.pth')
     segmentation_model = SemanticSegmentation(model_path)
 
     head_parts = [HeadPart.hair, HeadPart.upper_lip, HeadPart.lower_lip]
+
+    if save_to_file:
+        frame_width = int(video_stream.get(cv2.CAP_PROP_FRAME_WIDTH))
+        frame_height = int(video_stream.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        fps = int(video_stream.get(cv2.CAP_PROP_FPS))
+
+        out_stream = cv2.VideoWriter(out_file_path, cv2.VideoWriter_fourcc('M','J','P','G'), fps,
+                                     (frame_width, frame_height))
 
     while True:
         ret, image = video_stream.read()
@@ -48,10 +57,17 @@ def apply_makeup_on_video(video_source, colors, flip=True):
 
         processed_image = apply_makeup_on_image(image, segmentation_model, head_parts, colors)
 
-        cv2.imshow('my webcam', processed_image)
+        if not save_to_file:
+            cv2.imshow('my webcam', processed_image)
+        else:
+            out_stream.write(processed_image)
 
         if cv2.waitKey(1) == 27:
             break  # esc to quit
 
     video_stream.release()
+
+    if out_stream:
+        out_stream.release()
+
     cv2.destroyAllWindows()
