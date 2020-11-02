@@ -37,7 +37,11 @@ def transform_video(request):
 
     extension = get_file_extension(file_name)
 
-    return send_file(transformed_file_path, mimetype='video/' + extension)
+    try:
+        return send_file(transformed_file_path, mimetype='video/' + extension)
+    finally:
+        os.remove(video_file_full_path)
+        os.remove(transformed_file_path)
 
 
 def color_string_to_list(string):
