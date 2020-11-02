@@ -1,5 +1,5 @@
 import argparse
-import makeup_service
+from makeup_service.server import console
 
 
 def parse_args():
@@ -20,7 +20,7 @@ def main():
     colors = [args.hair_color, args.upper_lip_color, args.lower_lip_color]
     flip = args.flip_image
 
-    makeup_service.apply_makeup_on_video(video_source=video_source, colors=colors, flip=flip)
+    console.run(video_source=video_source, colors=colors, flip=flip)
 
 
 if __name__ == '__main__':
