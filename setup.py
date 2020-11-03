@@ -13,8 +13,8 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/Art95/makeup_service",
     packages=setuptools.find_packages(),
-    include_package_data=True,
-    package_data={'makeup_service': ['data/*']},
+    package_data={'makeup_service': ['data/*.pth']},
+    zip_safe=False,
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
