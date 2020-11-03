@@ -14,6 +14,7 @@ setuptools.setup(
     url="https://github.com/Art95/makeup_service",
     packages=setuptools.find_packages(),
     include_package_data=True,
+    package_data={'makeup_service': ['data/*']},
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
