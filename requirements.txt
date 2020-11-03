@@ -1,0 +1,6 @@
+matplotlib
+Pillow
+pytest
+pytest-cov
+scipy
+Werkzeug
