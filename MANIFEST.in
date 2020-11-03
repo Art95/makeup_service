@@ -1,0 +1,4 @@
+include LICENSE
+include README.md
+recursive-include data/ *
+recursive-include makeup_service/face_makeup/ *
