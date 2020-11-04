@@ -16,9 +16,8 @@ app.add_url_rule('/video', view_func=views.process_video, methods=['GET', 'POST'
 
 def parse_args():
     parse = argparse.ArgumentParser()
-    parse.add_argument('--host', default="127.0.0.1")
+    parse.add_argument('--host', default="0.0.0.0")
     parse.add_argument('--port', default=5000)
-    parse.add_argument('--debug', default=True)
 
     return parse.parse_args()
 
@@ -28,6 +27,5 @@ if __name__ == '__main__':
 
     host = args.host
     port = args.port
-    debug = args.debug
 
-    app.run(host=host, port=port, debug=debug)
+    app.run(host=host, port=port)

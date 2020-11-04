@@ -8,7 +8,7 @@ ENV OPENCV_PACKAGES libavcodec-dev libavformat-dev libswscale-dev libgstreamer-p
                     libgtk-3-dev libpng-dev libjpeg-dev
 ENV X11_PACKAGES libxkbcommon-dev libxcb-xkb-dev
 ENV PYTHON_PACKAGES numpy scipy torch torchvision matplotlib Pillow scikit-image flask pytest pytest-cov scipy \
-                    Werkzeug eventlet
+                    Werkzeug eventlet gunicorn
 
 
 # Install system packages
@@ -42,3 +42,14 @@ RUN git clone https://github.com/opencv/opencv.git && \
     cd / && rm -rf opencv/
 
 EXPOSE 5000
+ENV PORT 5000
+
+# Start application
+COPY . /app
+WORKDIR /app
+RUN pip3 install -r requirements.txt .
+
+CMD exec gunicorn --bind :$PORT --chdir /app/makeup_service/server app:app --workers 1 --threads 1 --timeout 60
+
+
+
