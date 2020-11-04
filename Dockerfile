@@ -7,7 +7,8 @@ ENV PYTHON_SYSTEM_PACKAGES python3 python3-dev python3-pip python3-setuptools
 ENV OPENCV_PACKAGES libavcodec-dev libavformat-dev libswscale-dev libgstreamer-plugins-base1.0-dev libgstreamer1.0-dev \
                     libgtk-3-dev libpng-dev libjpeg-dev
 ENV X11_PACKAGES libxkbcommon-dev libxcb-xkb-dev
-ENV PYTHON_PACKAGES numpy scipy
+ENV PYTHON_PACKAGES numpy scipy torch torchvision matplotlib Pillow scikit-image flask pytest pytest-cov scipy \
+                    Werkzeug eventlet
 
 
 # Install system packages
@@ -40,12 +41,4 @@ RUN git clone https://github.com/opencv/opencv.git && \
     make -j$(nproc --ignore=1) && make install && \
     cd / && rm -rf opencv/
 
-
-# Install face makeup codebase
-RUN git clone https://github.com/Art95/makeup_service.git && \
-    cd makeup_service && \
-    pip3 install -r requirements.txt .
-
-
-# Run application
-CMD ["sh", "-c", "ip_address=$(hostname -I); python3 makeup_service/makeup_service/server/app.py --host $ip_address"]
+EXPOSE 5000
