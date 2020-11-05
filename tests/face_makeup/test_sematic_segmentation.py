@@ -4,7 +4,7 @@ import numpy as np
 from PIL import Image
 from makeup_service.face_makeup.semantic_segmentation import SemanticSegmentation
 from makeup_service.server.common import get_data_folder
-from tests.helpers.utils import get_test_files_folder_path
+from helpers.utils import get_test_files_folder_path
 
 
 def test_get_segmentation():
