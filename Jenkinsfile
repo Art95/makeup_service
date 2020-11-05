@@ -2,13 +2,13 @@ pipeline {
     agent {
         docker {
             image 'abaraniuk/makeup_service:latest'
-            args '-det -i --name makeup_service_jenkins --gpus all -v $WORKSPACE:/app/'
+            args '--name makeup_service_jenkins --gpus all -v $WORKSPACE:/app/'
         }
     }
     stages {
         stage('Build') {
             steps {
-                sh 'cd /app/ && pip3 install -r requirements.txt .'
+                sh 'ls'
             }
         }
         stage('Test') {
