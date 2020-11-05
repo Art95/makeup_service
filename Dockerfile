@@ -3,7 +3,7 @@ LABEL maintainer Artem Baraniuk "artem.baranyuk@gmail.com"
 
 # Define environmental variables
 ENV BUILD_PACKAGES mc git cmake wget nano unzip build-essential pkg-config gcc g++
-ENV PYTHON_SYSTEM_PACKAGES python3 python3-dev python3-pip python3-setuptools
+ENV PYTHON_SYSTEM_PACKAGES python3 python3-dev python3-pip python3-setuptools python3-venv
 ENV OPENCV_PACKAGES libavcodec-dev libavformat-dev libswscale-dev libgstreamer-plugins-base1.0-dev libgstreamer1.0-dev \
                     libgtk-3-dev libpng-dev libjpeg-dev
 ENV X11_PACKAGES libxkbcommon-dev libxcb-xkb-dev
