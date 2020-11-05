@@ -2,7 +2,7 @@ pipeline {
     agent {
         docker {
             image 'abaraniuk/makeup_service:latest'
-            args '--gpus all -v $WORKSPACE:/app/'
+            args '-det -i --name makeup_service_jenkins --gpus all -v $WORKSPACE:/app/'
         }
     }
     stages {
