@@ -15,7 +15,9 @@ pipeline {
         }
         stage('Test') {
             steps {
-                sh 'pytest'
+                withEnv(["HOME=${env.WORKSPACE}"]) {
+                    sh 'pytest'
+                }
             }
         }
     }
