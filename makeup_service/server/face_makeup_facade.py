@@ -1,3 +1,4 @@
+import cv2
 from PIL import Image
 from makeup_service.face_makeup.semantic_segmentation import SemanticSegmentation
 from makeup_service.face_makeup.image_transformation import *
