@@ -8,12 +8,19 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                sh 'ls /'
+                withEnv(["HOME=${env.WORKSPACE}"]) {
+                    sh "pip3 install -r requirements.txt --user ."
+                }
             }
         }
         stage('Test') {
             steps {
-                sh 'cd /app/ && pytest'
+                sh 'pytest'
+            }
+        }
+        post {
+            cleanup {
+                cleanWs()
             }
         }
     }
