@@ -8,16 +8,14 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                withEnv(["HOME=${env.WORKSPACE}"]) {
-                    sh "pip3 install -r requirements.txt --user ."
-                }
+                    sh "python3 -m venv myenv"
+                    sh "source myenv/bin/activate"
+                    sh "pip3 install -r requirements.txt ."
             }
         }
         stage('Test') {
             steps {
-                withEnv(["HOME=${env.WORKSPACE}"]) {
                     sh 'pytest'
-                }
             }
         }
     }
