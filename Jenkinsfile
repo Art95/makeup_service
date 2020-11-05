@@ -1,20 +1,19 @@
 pipeline {
-    agent any
-
+    agent {
+        docker {
+            image 'abaraniuk/makeup_service:latest'
+            args '--gpus all -v $WORKSPACE:/app/'
+        }
+    }
     stages {
         stage('Build') {
             steps {
-                echo 'Building..'
+                sh 'cd /app/ && pip3 install -r requirements.txt .'
             }
         }
         stage('Test') {
             steps {
-                echo 'Testing..'
-            }
-        }
-        stage('Deploy') {
-            steps {
-                echo 'Deploying....'
+                sh 'cd /app/ && pytest'
             }
         }
     }
