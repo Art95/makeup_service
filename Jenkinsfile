@@ -18,10 +18,10 @@ pipeline {
                 sh 'pytest'
             }
         }
-        post {
-            cleanup {
-                cleanWs()
-            }
+    }
+    post {
+        cleanup {
+            cleanWs()
         }
     }
 }
