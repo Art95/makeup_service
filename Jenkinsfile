@@ -8,6 +8,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
+                    sh "apt-get install python3-venv"
                     sh "python3 -m venv myenv"
                     sh "source myenv/bin/activate"
                     sh "pip3 install -r requirements.txt ."
