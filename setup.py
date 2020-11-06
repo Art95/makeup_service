@@ -26,6 +26,7 @@ setuptools.setup(
         'torchvision',
         'scikit-image',
         'flask',
+        'flask-socketio',
         'numpy'
     ]
 )

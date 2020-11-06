@@ -1,4 +1,5 @@
 from flask import request
+from flask_socketio import send, emit
 from makeup_service.server.request_processor import transform_video, transform_image
 
 
@@ -26,3 +27,16 @@ def process_video():
             return transform_video(request)
         except RuntimeError as err:
             return str(err)
+
+
+def send_segmentation(image):
+    print("Segmentation request")
+    emit('segmentation', 'segmentation')
+
+
+def client_connect():
+    print("Client connected")
+
+
+def client_disconnect():
+    print("Client disconnected")

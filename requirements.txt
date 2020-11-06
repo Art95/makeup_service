@@ -3,6 +3,8 @@ scikit-image
 torch
 torchvision
 flask
+flask-socketio
+requests
 matplotlib
 Pillow
 pytest
