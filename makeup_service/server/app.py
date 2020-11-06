@@ -2,12 +2,9 @@ from flask import Flask
 import os
 import argparse
 import makeup_service.server.views as views
-from makeup_service.server.common import get_uploads_folder_path
-
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
-app.config['UPLOAD_FOLDER'] = get_uploads_folder_path()
 
 app.add_url_rule('/', view_func=views.home, methods=['GET'])
 app.add_url_rule('/image', view_func=views.process_image, methods=['GET', 'POST'])
