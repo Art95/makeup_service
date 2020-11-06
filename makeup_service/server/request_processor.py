@@ -1,11 +1,9 @@
 import cv2
 import io
-import os
 import numpy as np
+import tempfile
 from flask import flash, send_file
-from werkzeug.utils import secure_filename
 from makeup_service.server.face_makeup_facade import FaceMakeupFacade
-from makeup_service.server.common import get_uploads_folder_path
 
 face_makeup = FaceMakeupFacade()
 
@@ -28,41 +26,33 @@ def transform_video(request):
     allowed_extensions = {'avi'}
     colors = get_colors(request)
 
-    file_name = get_video_file_from_request(request, allowed_extensions)
-    video_file_full_path = os.path.join(get_uploads_folder_path(), file_name)
-    transformed_file_path = os.path.join(get_uploads_folder_path(), 'transformed_' + file_name)
+    video_file = get_video_file_from_request(request, allowed_extensions)
+    transformed_temp_file = tempfile.NamedTemporaryFile(suffix=get_file_extension(video_file.name, True))
 
-    face_makeup.apply_makeup_on_video(video_file_full_path, colors, save_to_file=True,
-                                      out_file_path=transformed_file_path)
+    face_makeup.apply_makeup_on_video(video_file.name, colors, save_to_file=True,
+                                      out_file_path=transformed_temp_file.name)
 
-    extension = get_file_extension(file_name)
+    extension = get_file_extension(video_file.name)
 
-    try:
-        return send_file(transformed_file_path, mimetype='video/' + extension)
-    finally:
-        os.remove(video_file_full_path)
-        os.remove(transformed_file_path)
+    return send_file(transformed_temp_file.name, mimetype='video/' + extension)
 
 
 def color_string_to_list(string):
     return list(map(int, string.split(',')))
 
 
-def get_file_extension(file_name):
+def get_file_extension(file_name, with_dot=False):
     extension = file_name.split('.')[1]
-    return extension
+
+    if with_dot:
+        return '.' + extension
+    else:
+        return extension
 
 
 def is_allowed_file(file_name, allowed_extensions):
     extension = get_file_extension(file_name)
     return extension in allowed_extensions
-
-
-def ensure_uploads_folder_exists():
-    folder_path = get_uploads_folder_path()
-
-    if not os.path.exists(folder_path):
-        os.makedirs(folder_path)
 
 
 def get_colors(request):
@@ -98,15 +88,12 @@ def get_source_from_request(request, allowed_extensions):
 
 
 def get_video_file_from_request(request, allowed_extensions):
-    ensure_uploads_folder_exists()
-
     source = get_source_from_request(request, allowed_extensions)
 
-    file_name = secure_filename(source.filename)
-    full_file_path = os.path.join(get_uploads_folder_path(), file_name)
-    source.save(full_file_path)
+    source_video_temp_file = tempfile.NamedTemporaryFile(suffix=get_file_extension(source.filename, True))
+    source.save(source_video_temp_file.name)
 
-    return file_name
+    return source_video_temp_file
 
 
 def get_image_from_request(request, allowed_extensions):
@@ -116,5 +103,4 @@ def get_image_from_request(request, allowed_extensions):
     img_np = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
 
     return img_np, source.filename
-
 
