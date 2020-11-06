@@ -1,8 +1,6 @@
 import cv2
 import os
-import numpy as np
 from makeup_service.server.face_makeup_facade import FaceMakeupFacade
-from makeup_service.server.common import get_data_folder
 from helpers.utils import get_test_files_folder_path
 
 
