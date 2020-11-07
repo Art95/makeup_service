@@ -39,22 +39,14 @@ def transform_video(request):
 
 
 def transform_image_stream(data):
-    hair_color = data['hair_color']
-    upper_lip_color = data['upper_lip_color']
-    lower_lip_color = data['lower_lip_color']
-
     decoded = base64.b64decode(data['image'])
 
     np_arr = np.frombuffer(decoded, np.uint8)
     img_np = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
 
-    result = face_makeup.apply_makeup_on_image(img_np, [hair_color, upper_lip_color, lower_lip_color])
+    segmentation = face_makeup.get_segmentation(img_np)
 
-    frame = cv2.imencode('.jpg', result)[1].tobytes()
-    frame = base64.b64encode(frame)
-
-    return frame
-
+    return segmentation.tolist()
 
 
 def color_string_to_list(string):
