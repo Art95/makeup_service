@@ -4,8 +4,9 @@ import cv2
 import pytest
 import numpy as np
 import tempfile
+import base64
 
-from makeup_service.server.app import app
+from makeup_service.server.app import app, socketio
 from helpers.utils import get_test_files_folder_path
 
 
@@ -98,3 +99,36 @@ def test_process_video(client):
         assert test_image.shape == image.shape
 
     cap.release()
+
+
+def test_send_segmentation():
+    client = socketio.test_client(app, namespace='/stream')
+    test_image_path = os.path.join(get_test_files_folder_path(), 'test_image.jpg')
+    test_image = cv2.imread(test_image_path)
+
+    expected_image_id = 3
+
+    frame = cv2.imencode('.jpg', test_image)[1].tobytes()
+    frame = base64.b64encode(frame)
+
+    expected_segmentation_path = os.path.join(get_test_files_folder_path(), 'segmentation.npy')
+    expected_segmentation = np.load(expected_segmentation_path)
+
+    client.emit('image', {
+                    'id': expected_image_id,
+                    'image': frame,
+                },
+                namespace='/stream')
+
+    received = client.get_received('/stream')
+
+    assert 1 == len(received)
+    assert received[0]['name'] == 'segmentation'
+
+    args = received[0]['args']
+
+    assert 1 == len(args)
+    assert args[0]['id'] == expected_image_id
+
+    actual_segmentation = np.array(args[0]['segmentation'])
+    assert expected_segmentation.shape == actual_segmentation.shape
