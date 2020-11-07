@@ -1,6 +1,6 @@
 from flask import request
 from flask_socketio import send, emit
-from makeup_service.server.request_processor import transform_video, transform_image, transform_image_stream
+from makeup_service.server.request_processor import transform_video, transform_image, get_segmentation_for_image
 
 
 def home():
@@ -30,8 +30,9 @@ def process_video():
 
 
 def send_segmentation(image):
-    transformed_img = transform_image_stream(image)
-    emit('segmentation', {'segmentation': transformed_img})
+    image_id = image['id']
+    segmentation = get_segmentation_for_image(image)
+    emit('segmentation', {'id': image_id, 'segmentation': segmentation})
 
 
 def client_connect():

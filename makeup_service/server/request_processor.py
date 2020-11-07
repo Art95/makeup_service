@@ -38,7 +38,7 @@ def transform_video(request):
     return send_file(transformed_temp_file.name, mimetype='video/' + extension)
 
 
-def transform_image_stream(data):
+def get_segmentation_for_image(data):
     decoded = base64.b64decode(data['image'])
 
     np_arr = np.frombuffer(decoded, np.uint8)
