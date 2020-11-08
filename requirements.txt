@@ -10,4 +10,5 @@ Pillow
 pytest
 pytest-cov
 scipy
+eventlet
 Werkzeug

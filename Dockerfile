@@ -41,4 +41,11 @@ RUN git clone https://github.com/opencv/opencv.git && \
     make -j$(nproc --ignore=1) && make install && \
     cd / && rm -rf opencv/
 
-EXPOSE 5000
+EXPOSE 8081
+
+# IMPORTANT: Copy /etc/protocols to folder with Dockerfile to execute this. Needed for tcp to work
+COPY ./protocols /etc/protocols
+
+# Install project related dependencies
+COPY requirements.txt /requirements.txt
+RUN pip3 install -r /requirements.txt && rm /requirements.txt
