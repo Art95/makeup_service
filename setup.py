@@ -22,10 +22,12 @@ setuptools.setup(
     ],
     python_requires='>=3.6',
     install_requires=[
+        'opencv-python',
         'torch',
         'torchvision',
         'scikit-image',
         'flask',
+        'flask-socketio',
         'numpy'
     ]
 )

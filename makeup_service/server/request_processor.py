@@ -1,5 +1,6 @@
 import cv2
 import io
+import base64
 import numpy as np
 import tempfile
 from flask import flash, send_file
@@ -35,6 +36,17 @@ def transform_video(request):
     extension = get_file_extension(video_file.name)
 
     return send_file(transformed_temp_file.name, mimetype='video/' + extension)
+
+
+def get_segmentation_for_image(data):
+    decoded = base64.b64decode(data['image'])
+
+    np_arr = np.frombuffer(decoded, np.uint8)
+    img_np = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+
+    segmentation = face_makeup.get_segmentation(img_np)
+
+    return segmentation.tolist()
 
 
 def color_string_to_list(string):

@@ -1,11 +1,15 @@
 numpy
 scikit-image
+opencv-python
 torch
 torchvision
 flask
+flask-socketio
+requests
 matplotlib
 Pillow
 pytest
 pytest-cov
 scipy
+eventlet
 Werkzeug
