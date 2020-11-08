@@ -1,4 +1,6 @@
+import os
 from makeup_service.face_makeup.image_transformation import *
+from helpers.utils import get_test_files_folder_path
 
 
 def test_head_part_values():
@@ -11,21 +13,16 @@ def test_head_part_values():
     assert expected_lower_lip_value == HeadPart.lower_lip.value
 
 
-def test_color_bgr_to_hsv():
-    bgr_color = (128, 0, 128)
+def test_change_segment_color():
+    image_path = os.path.join(get_test_files_folder_path(), 'test_image.jpg')
+    image = cv2.imread(image_path)
 
-    expected_hsv_value = (150, 255, 128)
-    actual_hsv_value = color_bgr_to_hsv(bgr_color)
+    segmentation_path = os.path.join(get_test_files_folder_path(), 'segmentation.npy')
+    segmentation = np.load(segmentation_path)
 
-    assert np.allclose(expected_hsv_value, actual_hsv_value)
+    head_part = HeadPart.hair
+    color = [255, 0, 0]
 
+    res_image = change_segment_color(image, segmentation, head_part, color)
 
-def test_color_hsv_to_bgr():
-    hsv_color = (150, 255, 128)
-
-    expected_bgr_value = (128, 0, 128)
-    actual_bgr_value = color_hsv_to_bgr(hsv_color)
-
-    assert np.allclose(expected_bgr_value, actual_bgr_value)
-
-
+    assert res_image.shape == image.shape

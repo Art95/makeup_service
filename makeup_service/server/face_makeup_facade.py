@@ -1,3 +1,4 @@
+import cv2
 from PIL import Image
 from makeup_service.face_makeup.semantic_segmentation import SemanticSegmentation
 from makeup_service.face_makeup.image_transformation import *
@@ -12,7 +13,7 @@ class FaceMakeupFacade:
 
         self.__head_parts = [HeadPart.hair, HeadPart.upper_lip, HeadPart.lower_lip]
 
-    def apply_makeup_on_image(self, image, colors):
+    def get_segmentation(self, image):
         width = image.shape[1]
         height = image.shape[0]
         dim = (width, height)
@@ -22,6 +23,11 @@ class FaceMakeupFacade:
 
         segmentation = self.__segmentation_model.get_segmentation(img_pil)
         segmentation = cv2.resize(segmentation, dim, interpolation=cv2.INTER_NEAREST)
+
+        return segmentation
+
+    def apply_makeup_on_image(self, image, colors):
+        segmentation = self.get_segmentation(image)
 
         for head_part, color in zip(self.__head_parts, colors):
             image = change_segment_color(image, segmentation, head_part, color)
