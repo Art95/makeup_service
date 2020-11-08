@@ -38,7 +38,7 @@ There are 2 ways to run this app, using python virualenvs or docker.
 ```
     pytest
 ```
-7. Now run the server itself with (Supported arguments are *--host*, *--port* and *--debug*):
+7. Now run the server itself with (supported arguments are *--host*, *--port* and *--debug*):
 ```
     python makeup_service/server/app.py
 ```
@@ -69,6 +69,7 @@ __Note__: you can look into start.sh and execute docker commands with needed par
 
 ## How to use
 There are 2 ways of using this service: using http requests or [client application](https://github.com/Art95/makeup_service_client) for this service.
+You can also try 'console' approach.
 
 #### Using http requests
 In order to use service you will need application capable of doing http requests. You can use [Postman](https://www.postman.com/), for example.
@@ -111,4 +112,25 @@ Body for request will be the same but video file with 'avi' extension should be 
 Request should be send to:
 ```
     http://<SERVER-ADDRESS>:<PORT>/video
+```
+
+#### Using client application
+Client application is provided. In order to use it follow instructions in [client application](https://github.com/Art95/makeup_service_client).
+
+#### Using console
+Console version will only work with virtual environment installation.
+To use this approach instead of command in step 7 in Virtual Environment instruction run
+```
+    python bin/main.py
+```
+You can set other options using arguments. Supported arguments are:
+* --video-source (supported values: 0 - web camera, string - path to .avi video file)
+* --flip-image (supported values True or False; sets if input images should be flipped)
+* --hair-color (3 integer space separated values for b,g,r values of color code)
+* --upper-lip-color (same as above)
+* --lower-lip-color (same as above)
+
+Example:
+```
+python bin/main.py --video-source ./test.avi --flip-image True --hair-color 230 50 20 --upper-lip-color 20 70 180 --lower-lip-color 20 70 180
 ```

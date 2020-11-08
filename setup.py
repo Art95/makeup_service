@@ -5,10 +5,10 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="makeup_service",
-    version="0.0.1",
+    version="1.0.0",
     author="Artem Baraniuk",
     author_email="artem.baranyuk@gmail.com",
-    description="Applies simple makeup on videos with human face",
+    description="Applies simple makeup on videos and images with human face",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/Art95/makeup_service",
