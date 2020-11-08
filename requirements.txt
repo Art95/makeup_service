@@ -1,6 +1,7 @@
 numpy
 scikit-image
 opencv-python
+gunicorn
 torch
 torchvision
 flask

@@ -30,7 +30,4 @@ WORKDIR /app
 RUN pip3 install --upgrade pip
 RUN pip3 install -r requirements.txt .
 
-CMD exec gunicorn --bind :$PORT --chdir /app/makeup_service/server app:app --workers 1 --threads 1 --timeout 60
-
-
-
+CMD exec gunicorn --bind :$PORT --chdir /app/makeup_service/server app:app --workers 1 --worker-class eventlet --threads 1 --timeout 60
