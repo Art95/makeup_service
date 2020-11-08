@@ -13,13 +13,13 @@ Based on the project https://github.com/zllrunning/face-makeup.PyTorch.
 There are 2 ways to run this app, using python virualenvs or docker.
 
 #### Virtual environment approach
-1. In your terminal run:
+1. To create virtual environment in your terminal run:
 ```
     python3 -m pip install virtualenv
     python3 -m venv <PATH-FOR-VIRTUAL-ENV>
 ```
 2. Go to folder where you want code to be cloned to
-3. Run 
+3. Pull project's code 
 ```
     git clone https://github.com/Art95/makeup_service.git
     cd makeup_service
@@ -38,20 +38,54 @@ There are 2 ways to run this app, using python virualenvs or docker.
 ```
     pytest
 ```
-7. Now run the server itself with (supported arguments are *--host*, *--port* and *--debug*):
+7. Now start the server itself with (supported arguments are *--host*, *--port* and *--debug*):
 ```
     python makeup_service/server/app.py
 ```
 
 #### Docker approach
+There are 2 dockers available: with and without preinstalled project.
+
+##### Docker with preinstalled project
+Docker with preinstalled project is deployment ready and can be used to run service immediately.
+Changes in code will demand docker rebuilding.
+
 1. [Optional] If docker is not installed go to [installation guide](https://docs.docker.com/engine/install/ubuntu/)
 2. [Optional] You can configure your system to avoid running *sudo* for docker commands [link](https://docs.docker.com/engine/install/linux-postinstall/)
-3. Run
+3. Pull docker (alternatively, you can build image yourself by following __Note__ section below)
+```
+    sudo docker pull abaraniuk/makeup_service:dpl
+```
+4. Start docker:
+```
+    sudo docker run --name makeup_service_dpl --gpus all --network host -det -it abaraniuk/makeup_service:dpl
+```
+5. To stop and remove docker containers run:
+```
+    sudo docker stop makeup_service_dpl
+    sudo docker rm makeup_service_dpl
+```
+
+__Note__: to build docker with preinstalled project go to folder where you want project's code to be and run:
+```
+    git clone https://github.com/Art95/makeup_service.git
+    cd makeup_service
+
+    git checkout origin/gc_deployment
+    sudo docker build -t <NAME-FOR-IMAGE> .
+```
+
+##### Docker without preinstalled project
+Docker without preinstalled project gives you higher control over execution and allows code change.
+
+1. [Optional] If docker is not installed go to [installation guide](https://docs.docker.com/engine/install/ubuntu/)
+2. [Optional] You can configure your system to avoid running *sudo* for docker commands [link](https://docs.docker.com/engine/install/linux-postinstall/)
+3. Pull docker (alternatively, you can build image yourself by following __Note__ section below)
 ```
     sudo docker pull abaraniuk/makeup_service:latest
 ```
 4. Go to folder where you want code to be cloned to
-5. Run 
+5. Clone project's code 
 ```
     git clone https://github.com/Art95/makeup_service.git
     cd makeup_service
@@ -66,6 +100,10 @@ There are 2 ways to run this app, using python virualenvs or docker.
 ```
 
 __Note__: you can look into start.sh and execute docker commands with needed parameters yourself
+__Note__: to build docker without preinstalled project go to project's directory and run:
+```
+    sudo docker build -t <NAME-FOR-IMAGE> .
+```
 
 ## How to use
 There are 2 ways of using this service: using http requests or [client application](https://github.com/Art95/makeup_service_client) for this service.
