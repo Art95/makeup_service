@@ -77,6 +77,7 @@ __Note__: to build docker with preinstalled project go to folder where you want 
 
 ##### Docker without preinstalled project
 Docker without preinstalled project gives you higher control over execution and allows code change.
+It is also using debug mode which gives more information but works slower.
 
 1. [Optional] If docker is not installed go to [installation guide](https://docs.docker.com/engine/install/ubuntu/)
 2. [Optional] You can configure your system to avoid running *sudo* for docker commands [link](https://docs.docker.com/engine/install/linux-postinstall/)
